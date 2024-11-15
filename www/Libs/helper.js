@@ -114,9 +114,24 @@ function DE() {
 //------------------------------------------------------------------------------
 function repeatQSO() {
 
-  playActivity();
+  // replay the same callsigns but at different points in time
+  for (let i = 0; i < Stations.length; i++) {
+    agents[i] = new jscw();
 
-} // end onFinished()
+    agents[i].setWpm(Stations[i].Wpm);
+    agents[i].setStartDelay(0.25 + Math.random() * 3 * (ACTIVITY-1));
+    //agents[i].setVolume(Stations[i].Amplitude);
+    agents[i].setFreq(Math.round(Stations[i].Pitch));
+
+    agents[i].setText(Stations[i].HisCall);
+    //agents[i].play();
+    }
+
+  for (let i = 0; i < Stations.length; i++) {
+    agents[i].play();
+  }
+
+} // end repeatQSO()
 //------------------------------------------------------------------------------
 
 
@@ -293,7 +308,7 @@ function HIS() {
   let tmp = document.getElementById("theirCALL").value; 
   if ((RUN == true) && (tmp.length>0)) {
       theirCALL = tmp;
-      sendMSG(theirCALL, repeatQSO);
+      sendMSG(theirCALL, checkUserResponse);
 
     if (DEBUG) { console.log("HIS(): ran!"); }
   }
@@ -309,10 +324,12 @@ function B4() {
 
 function QSTN() {
 // Sends the question mark "?"
-  if (RUN == true) {
-    MSG = "?"; 
-    sendMSG(MSG, repeatQSO);
-  } 
+  if ((RUN == true) && (document.getElementById("theirCALL").value.length>0)) {
+    for (let i = 0; i < Stations.length; i++) agents[i].stop();
+    MSG = "?";
+    sendMSG(MSG, checkUserResponse);
+  }
+  else sendMSG("?", repeatQSO); 
 } // end QSTN()
 
 function AGN() {
