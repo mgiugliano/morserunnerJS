@@ -119,7 +119,7 @@ function repeatQSO() {
     agents[i] = new jscw();
 
     agents[i].setWpm(Stations[i].Wpm);
-    agents[i].setStartDelay(0.25 + Math.random() * 3 * (ACTIVITY-1));
+    agents[i].setStartDelay(0.25 + Math.random() * 2 * (ACTIVITY-1));
     //agents[i].setVolume(Stations[i].Amplitude);
     agents[i].setFreq(Math.round(Stations[i].Pitch));
 

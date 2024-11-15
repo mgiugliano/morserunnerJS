@@ -5,7 +5,7 @@
 //------------------------------------------------------------------------------
 function createStation() {
   let station = {
-    Patience: 0.25 + Math.random() * 3 * (ACTIVITY-1),
+    Patience: 0.25 + Math.random() * 2 * (ACTIVITY-1),
     HisCall: pickCall(),
     HisNr: Math.floor(1 + Math.random() * 98),
     Amplitude: (5000 + 25000 * Math.random()) * 0.8,
