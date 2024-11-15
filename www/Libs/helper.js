@@ -114,9 +114,24 @@ function DE() {
 //------------------------------------------------------------------------------
 function repeatQSO() {
 
-  playActivity();
+  // replay the same callsigns but at different points in time
+  for (let i = 0; i < Stations.length; i++) {
+    agents[i] = new jscw();
 
-} // end onFinished()
+    agents[i].setWpm(Stations[i].Wpm);
+    agents[i].setStartDelay(0.25 + Math.random() * 2 * (ACTIVITY-1));
+    //agents[i].setVolume(Stations[i].Amplitude);
+    agents[i].setFreq(Math.round(Stations[i].Pitch));
+
+    agents[i].setText(Stations[i].HisCall);
+    //agents[i].play();
+    }
+
+  for (let i = 0; i < Stations.length; i++) {
+    agents[i].play();
+  }
+
+} // end repeatQSO()
 //------------------------------------------------------------------------------
 
 
@@ -255,7 +270,8 @@ function Nr() {
 // Sends the RST and the progressive number to the remote station
   let tmp = document.getElementById("theirCALL").value; 
   if ((RUN == true) && (tmp.length>0)) {
-    MSG = "5NN|S250 " + cut_numbers(NR); 
+    MSG = tmp + " 5NN|S250 " + cut_numbers(NR);
+    focus_NR(); 
     sendMSG(MSG, checkUserResponse);
 
     if (DEBUG) { console.log("Nr(): ran!"); }
@@ -266,16 +282,16 @@ function TU() {
 // Sends TU and concludes the QSO
   if (RUN == true) {
     //MSG = "TU E E"; 
-    MSG = "TU"; 
-    sendMSG(MSG);
-
+    MSG = "TU ";
     logQSO();
+    NR++;
 
     if (IDX != -1) {
       agents.splice(IDX, 1);
       Stations.splice(IDX, 1);
     }
     focus_CALL();       // The GUI input text field "hisCALL" becomes in focus
+    sendMSG(MSG + CALL, initiateQSO);
   } 
 } // end TU()
 
@@ -292,7 +308,7 @@ function HIS() {
   let tmp = document.getElementById("theirCALL").value; 
   if ((RUN == true) && (tmp.length>0)) {
       theirCALL = tmp;
-      sendMSG(theirCALL);
+      sendMSG(theirCALL, checkUserResponse);
 
     if (DEBUG) { console.log("HIS(): ran!"); }
   }
@@ -308,10 +324,12 @@ function B4() {
 
 function QSTN() {
 // Sends the question mark "?"
-  if (RUN == true) {
-    MSG = "?"; 
-    sendMSG(MSG, repeatQSO);
-  } 
+  if ((RUN == true) && (document.getElementById("theirCALL").value.length>0)) {
+    for (let i = 0; i < Stations.length; i++) agents[i].stop();
+    MSG = "?";
+    sendMSG(MSG, checkUserResponse);
+  }
+  else sendMSG("?", repeatQSO); 
 } // end QSTN()
 
 function AGN() {
